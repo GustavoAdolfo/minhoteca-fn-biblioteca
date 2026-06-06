@@ -1,0 +1,84 @@
+{
+  "name": "minhoteca-fn-biblioteca",
+  "version": "0.1.0",
+  "description": "Função lambda para consulta e visualização do acervo da Minhoteca",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc && tsc-alias",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:experimental": "NODE_OPTIONS='--experimental-vm-modules --trace-warnings' jest",
+    "test:experimental:coverage": "NODE_OPTIONS='--experimental-vm-modules --trace-warnings' jest --coverage",
+    "test:experimental:watch": "NODE_OPTIONS='--experimental-vm-modules --trace-warnings' jest --watch",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "lint:staged": "lint-staged",
+    "format": "prettier --write \"**/*.{js,ts,md,json,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{js,ts,md,json,yml,yaml}\"",
+    "postinstall": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GustavoAdolfo/minhoteca-fn-biblioteca.git"
+  },
+  "keywords": [
+    "Minhoteca",
+    "biblioteca",
+    "empréstimo",
+    "livro",
+    "livraria",
+    "comunidade"
+  ],
+  "author": "gustavo.adolfo.as@gmail.com",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/GustavoAdolfo/minhoteca-fn-biblioteca/issues"
+  },
+  "homepage": "https://github.com/GustavoAdolfo/minhoteca-fn-biblioteca#readme",
+  "lint-staged": {
+    "*.{js,ts,json,md,yml,yaml}": [
+      "prettier --write"
+    ],
+    "src/**/*.{ts,tsx}": [
+      "eslint --max-warnings=0 --fix"
+    ]
+  },
+  "devDependencies": {
+    "@aws-sdk/client-config-service": "^3.1063.0",
+    "@aws-sdk/client-dynamodb": "^3.1063.0",
+    "@aws-sdk/client-s3": "^3.1063.0",
+    "@aws-sdk/lib-dynamodb": "^3.1063.0",
+    "@aws-sdk/node-http-handler": "^3.370.0",
+    "@aws-sdk/s3-request-presigner": "^3.1063.0",
+    "@aws-sdk/util-dynamodb": "^3.996.3",
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
+    "@gustavoadolfo/minhoteca-adapter-layer": "^0.1.6",
+    "@gustavoadolfo/minhoteca-casos-de-uso-layer": "^0.3.0",
+    "@gustavoadolfo/minhoteca-core-layer": "^1.0.15",
+    "@smithy/types": "^4.14.3",
+    "@types/aws-lambda": "^8.10.161",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.9.2",
+    "@typescript-eslint/eslint-plugin": "^8.60.1",
+    "@typescript-eslint/parser": "^8.60.1",
+    "aws-lambda": "^1.0.7",
+    "commitlint": "^21.0.2",
+    "dotenv": "^17.4.2",
+    "esbuild": "^0.28.0",
+    "eslint": "^10.4.1",
+    "husky": "^9.1.7",
+    "jest": "^30.4.2",
+    "lint-staged": "^17.0.7",
+    "prettier": "^3.8.3",
+    "ts-jest": "^29.4.11",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.17",
+    "typescript": "^6.0.3",
+    "winston": "^3.19.0"
+  }
+}
