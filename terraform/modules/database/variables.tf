@@ -24,7 +24,7 @@ variable "cache_write_capacity" {
 
 variable "cache_hash_key" {
   type        = string
-  default     = "pageId"
+  default     = "PageId"
   description = "Chave hash para a tabela DynamoDB"
 }
 

@@ -12,6 +12,6 @@ resource "aws_dynamodb_table" "ddb_acervo_cache" {
     attribute_name = var.cache_ttl
     enabled        = var.cache_ttl_enabled
   }
-  tags = merge(var.application_tags, { Contexto = "Vitrine" })
+  tags = merge(var.application_tags, { Contexto = "Acervo" })
 }
 
