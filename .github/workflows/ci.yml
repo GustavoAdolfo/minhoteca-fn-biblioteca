@@ -114,6 +114,7 @@ jobs:
     runs-on: ubuntu-latest
     # Executa este job SOMENTE quando houver um push na branch main
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: prod
 
     permissions:
       id-token: write # Necessário para interagir com o OIDC da AWS
@@ -154,10 +155,22 @@ jobs:
       - name: Terraform Plan
         env:
           TF_appregistry_id: ${{ env.TF_appregistry_id }}
+          TF_mongodb_username: ${{ env.TF_mongodb_username }}
+          TF_mongodb_password: ${{ env.TF_mongodb_password }}
+          TF_mongodb_database: ${{ env.TF_mongodb_database }}
+          TF_mongodb_cluster: ${{ env.TF_mongodb_cluster }}
+          TF_mongodb_appname: ${{ env.TF_mongodb_appname }}
+          TF_environment: ${{ env.TF_environment }}
         run: terraform plan -out=tfplan
 
       - name: Terraform Apply
         env:
           TF_appregistry_id: ${{ env.TF_appregistry_id }}
+          TF_mongodb_username: ${{ env.TF_mongodb_username }}
+          TF_mongodb_password: ${{ env.TF_mongodb_password }}
+          TF_mongodb_database: ${{ env.TF_mongodb_database }}
+          TF_mongodb_cluster: ${{ env.TF_mongodb_cluster }}
+          TF_mongodb_appname: ${{ env.TF_mongodb_appname }}
+          TF_environment: ${{ env.TF_environment }}
         # O auto-approve é essencial em ambientes de CI/CD pois não há interação humana
         run: terraform apply -auto-approve tfplan
