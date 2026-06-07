@@ -57,7 +57,7 @@
     "@aws-sdk/client-dynamodb": "^3.1063.0",
     "@aws-sdk/client-s3": "^3.1063.0",
     "@aws-sdk/lib-dynamodb": "^3.1063.0",
-    "@aws-sdk/node-http-handler": "^3.370.0",
+    "@aws-sdk/node-http-handler": "^3.374.0",
     "@aws-sdk/s3-request-presigner": "^3.1063.0",
     "@aws-sdk/util-dynamodb": "^3.996.3",
     "@commitlint/cli": "^21.0.2",
