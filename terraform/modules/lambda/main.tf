@@ -52,7 +52,7 @@ resource "aws_sqs_queue" "acervoFunctionDL" {
 
 
 data "external" "acervoFunction_version" {
-  program = ["node", "${path.module}/../../version.mjs"]
+  program = ["node", "${path.module}/../../../version.mjs"]
 }
 
 resource "null_resource" "acervoFunction_build" {
@@ -60,14 +60,14 @@ resource "null_resource" "acervoFunction_build" {
     src_hash = sha256(join("", [for f in sort(fileset("${path.module}/../../src", "**/*")) : filesha256("${path.module}/../../minhoteca-functions/acervoes-function/${f}")]))
   }
   provisioner "local-exec" {
-    command = "cd ${path.module}/../.. && npm install && npm run build"
+    command = "cd ${path.module}/../../.. && npm install && npm run build"
   }
 }
 
 data "archive_file" "acervoFunction_file" {
   depends_on  = [null_resource.acervoFunction_build]
   type        = "zip"
-  source_dir  = "${path.module}/../../dist/"
+  source_dir  = "${path.module}/../../../dist/"
   output_path = "${path.module}/acervoesFunction.zip"
 }
 
