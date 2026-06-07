@@ -83,6 +83,11 @@ jobs:
           echo "Versão na main: $MAIN_VERSION"
           echo "Versão na develop: $DEV_VERSION"
 
+          if [ -z "$MAIN_VERSION" ]; then
+            echo "Ainda não há conteúdo na branch main. Verifique se a branch main existe e contém um package.json válido."
+            exit 0
+          fi
+
           # sort -V ordena as versões. Se MAIN_VERSION for a menor (ou igual), então DEV_VERSION >= MAIN_VERSION
           if [ "$(printf '%s\n' "$MAIN_VERSION" "$DEV_VERSION" | sort -V | head -n1)" = "$MAIN_VERSION" ]; then
             # Verifica se existem modificações reais na develop em relação ao que já está na main
