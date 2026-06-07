@@ -9,7 +9,6 @@ resource "aws_lambda_function" "acervoFunction" {
   memory_size                    = var.lambda_geral_memory
   reserved_concurrent_executions = var.lambda_geral_reserved_concurrent_executions
   publish                        = false
-  kms_key_arn                    = aws_kms_key.kms_lambdas.arn
   filename                       = data.archive_file.acervoFunction_file.output_path
   source_code_hash               = data.archive_file.acervoFunction_file.output_base64sha256
   layers = [
