@@ -72,10 +72,3 @@ data "archive_file" "acervoFunction_file" {
   output_path = "${path.module}/acervoesFunction.zip"
 }
 
-output "lambda_acervoes_arn" {
-  value = aws_lambda_function.acervoFunction.arn
-}
-
-output "lambda_acervoes_invoke_arn" {
-  value = aws_lambda_function.acervoFunction.invoke_arn
-}
