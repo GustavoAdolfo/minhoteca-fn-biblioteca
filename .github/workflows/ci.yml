@@ -147,8 +147,12 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
+        env:
+          TF_appregistry_id: ${{ env.TF_appregistry_id }}
         run: terraform plan -out=tfplan
 
       - name: Terraform Apply
+        env:
+          TF_appregistry_id: ${{ env.TF_appregistry_id }}
         # O auto-approve é essencial em ambientes de CI/CD pois não há interação humana
         run: terraform apply -auto-approve tfplan

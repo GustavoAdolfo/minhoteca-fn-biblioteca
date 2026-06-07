@@ -148,3 +148,7 @@ vite.config.ts.timestamp-*
 
 .vscode/settings.json
 layer/nodejs/package-lock.json
+**/.terraform/*
+**/.terraform.lock.hcl
+**/terraform.tfstate
+**/terraform.tfstate.backup
