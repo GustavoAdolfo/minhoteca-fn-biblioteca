@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": false,
+    "declarationMap": false,
+    "removeComments": true,
     "target": "es2022",
     "lib": ["es2022", "dom"],
     "module": "node16",
@@ -8,10 +13,10 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "resolveJsonModule": true,
     "types": ["jest", "node"],
     "isolatedModules": true
   },
-  "include": ["src/**/*.ts", "tests/**/*.test.ts"]
+  "exclude": ["node_modules", "dist", "tests/**/*.ts"]
 }

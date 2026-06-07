@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "Função lambda para consulta e visualização do acervo da Minhoteca",
   "main": "dist/index.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc && tsc-alias",
     "test": "jest",
