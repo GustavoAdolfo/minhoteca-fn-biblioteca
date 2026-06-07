@@ -152,6 +152,12 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build package
+        run: npm run build
+
       - name: Terraform Plan
         env:
           TF_VAR_appregistry_id: ${{ env.TF_appregistry_id }}
