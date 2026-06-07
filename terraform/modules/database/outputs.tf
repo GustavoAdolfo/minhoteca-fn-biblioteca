@@ -12,3 +12,8 @@ output "ddb_acervo_cache_name" {
   value       = aws_dynamodb_table.ddb_acervo_cache.name
   description = "Nome da tabela DynamoDB para cache de acervo"
 }
+
+output "cache_hash_key_attribute_name" {
+  value       = var.cache_hash_key
+  description = "Nome do atributo da chave hash para a tabela DynamoDB"
+}

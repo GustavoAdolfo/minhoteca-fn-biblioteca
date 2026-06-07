@@ -57,7 +57,7 @@ resource "aws_cloudwatch_log_group" "log_acervoFunction" {
 resource "aws_iam_policy" "lbd_mensageria_policy_acervoFunction" {
   name        = "minhoteca-acervo-mensageria-policy"
   description = "IAM policy mensageria lambda Library Service"
-  policy      = data.aws_iam_policy_document.lambda_mensageria.json
+  policy      = data.aws_iam_policy_document.lambda_sqs.json
   tags        = merge(var.application_tags, { Contexto = "Acervo" })
 }
 
