@@ -141,3 +141,14 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+
+# npm configuration with credentials
+.npmrc
+
+.vscode/settings.json
+layer/nodejs/package-lock.json
+**/.terraform/*
+**/.terraform.lock.hcl
+**/terraform.tfstate
+**/terraform.tfstate.backup
