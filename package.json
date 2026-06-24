@@ -74,7 +74,7 @@
     "aws-lambda": "^1.0.7",
     "commitlint": "^21.0.2",
     "dotenv": "^17.4.2",
-    "esbuild": "^0.28.0",
+    "esbuild": "^0.28.1",
     "eslint": "^10.5.0",
     "husky": "^9.1.7",
     "jest": "^30.4.2",
