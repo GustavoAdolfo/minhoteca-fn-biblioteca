@@ -160,23 +160,23 @@ jobs:
 
       - name: Terraform Plan
         env:
-          TF_VAR_appregistry_id: ${{ env.TF_appregistry_id }}
-          TF_VAR_mongodb_username: ${{ env.TF_mongodb_username }}
-          TF_VAR_mongodb_password: ${{ env.TF_mongodb_password }}
-          TF_VAR_mongodb_database: ${{ env.TF_mongodb_database }}
-          TF_VAR_mongodb_cluster: ${{ env.TF_mongodb_cluster }}
-          TF_VAR_mongodb_appname: ${{ env.TF_mongodb_appname }}
-          TF_VAR_environment: ${{ env.TF_environment }}
+          TF_VAR_appregistry_id: ${{ vars.TF_appregistry_id }}
+          TF_VAR_mongodb_username: ${{ vars.TF_mongodb_username }}
+          TF_VAR_mongodb_password: ${{ vars.TF_mongodb_password }}
+          TF_VAR_mongodb_database: ${{ vars.TF_mongodb_database }}
+          TF_VAR_mongodb_cluster: ${{ vars.TF_mongodb_cluster }}
+          TF_VAR_mongodb_appname: ${{ vars.TF_mongodb_appname }}
+          TF_VAR_environment: ${{ vars.TF_environment }}
         run: terraform plan -out=tfplan
 
       - name: Terraform Apply
         env:
-          TF_VAR_appregistry_id: ${{ env.TF_appregistry_id }}
-          TF_VAR_mongodb_username: ${{ env.TF_mongodb_username }}
-          TF_VAR_mongodb_password: ${{ env.TF_mongodb_password }}
-          TF_VAR_mongodb_database: ${{ env.TF_mongodb_database }}
-          TF_VAR_mongodb_cluster: ${{ env.TF_mongodb_cluster }}
-          TF_VAR_mongodb_appname: ${{ env.TF_mongodb_appname }}
-          TF_VAR_environment: ${{ env.TF_environment }}
+          TF_VAR_appregistry_id: ${{ vars.TF_appregistry_id }}
+          TF_VAR_mongodb_username: ${{ vars.TF_mongodb_username }}
+          TF_VAR_mongodb_password: ${{ vars.TF_mongodb_password }}
+          TF_VAR_mongodb_database: ${{ vars.TF_mongodb_database }}
+          TF_VAR_mongodb_cluster: ${{ vars.TF_mongodb_cluster }}
+          TF_VAR_mongodb_appname: ${{ vars.TF_mongodb_appname }}
+          TF_VAR_environment: ${{ vars.TF_environment }}
         # O auto-approve é essencial em ambientes de CI/CD pois não há interação humana
         run: terraform apply -auto-approve tfplan
