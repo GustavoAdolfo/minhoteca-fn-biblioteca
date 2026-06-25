@@ -1,6 +1,6 @@
 {
   "name": "minhoteca-fn-biblioteca",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Função lambda para consulta e visualização do acervo da Minhoteca",
   "main": "dist/index.js",
   "files": [
