@@ -14,7 +14,7 @@ jobs:
 
     permissions:
       contents: write
-      packages: write
+      packages: read # Alterado para 'read' pois só precisamos ler pacotes, não mais escrever/publicar.
       pull-requests: write
 
     steps:
@@ -82,12 +82,6 @@ jobs:
               fi
             done
           fi
-
-      - name: Publish to GitHub Packages
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push version bump
         run: |
