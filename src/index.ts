@@ -20,6 +20,8 @@ export const handler = async (
 ): Promise<APIGatewayProxyResult> => {
   logService.info('Evento recebido:', {}, { event, context });
 
+  const tabelaCache = process.env.TB_CACHE ?? '';
+
   let cacheKey =
     event.path + (event.queryStringParameters ? JSON.stringify(event.queryStringParameters) : '');
   cacheKey = cacheKey.replace(/\s/g, '').replace(/[^a-zA-Z0-9:]/g, '_');
@@ -27,7 +29,7 @@ export const handler = async (
 
   let data: ResultType = {} as unknown as ResultType;
   try {
-    data = await cacheRepository.getData(process.env.TB_BIBLIOTECA_CACHE ?? 'biblioteca-cache', {
+    data = await cacheRepository.getData(tabelaCache, {
       name: 'PageId',
       type: 'S',
       value: cacheKey,
@@ -92,7 +94,7 @@ export const handler = async (
         const sizeInKB = Buffer.byteLength(JSON.stringify(result), 'utf8') / 1024;
         logService.info('Response size in KB:', {}, { sizeInKB });
         try {
-          await cacheRepository.saveData(process.env.TB_BIBLIOTECA_CACHE ?? 'biblioteca-cache', {
+          await cacheRepository.saveData(tabelaCache, {
             PageId: cacheKey,
             content: JSON.stringify(result),
             Expiration: Math.floor(Date.now() / 1000) + 3600 * 12, // Expira em 12 hora

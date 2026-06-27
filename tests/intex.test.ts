@@ -49,7 +49,7 @@ describe('BibliotecaHandler (index.ts)', () => {
 
     process.env.DYNAMODB_REPOSITORY = 'true';
     process.env.TABELA_LIVROS = 'Livros';
-    process.env.TB_BIBLIOTECA_CACHE = 'test-cache';
+    process.env.TB_CACHE = 'test-cache';
 
     handler = require('../src/index').handler;
     registradores = require('../src/registradores').registradores;
