@@ -20,8 +20,16 @@ provider "aws" {
 }
 
 module "database" {
-  source           = "../../modules/database"
-  application_tags = data.aws_servicecatalogappregistry_application.minhoteca_application.application_tag
+  source               = "../../modules/database"
+  application_tags     = data.aws_servicecatalogappregistry_application.minhoteca_application.application_tag
+  ddb_acervo_cache     = "minhoteca-acervo-cache"
+  cache_billing_type   = "PAY_PER_REQUEST"
+  cache_read_capacity  = 5
+  cache_write_capacity = 5
+  cache_hash_key       = "PageId"
+  cache_hash_type      = "S"
+  cache_ttl            = "43200"
+  cache_ttl_enabled    = true
 }
 
 module "lambda" {

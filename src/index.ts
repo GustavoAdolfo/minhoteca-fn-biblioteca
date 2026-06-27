@@ -27,7 +27,7 @@ export const handler = async (
 
   let data: ResultType = {} as unknown as ResultType;
   try {
-    data = await cacheRepository.getData(process.env.TB_BIBLIOTECA_CACHE ?? 'biblioteca-cache', {
+    data = await cacheRepository.getData(process.env.TB_CACHE ?? '', {
       name: 'PageId',
       type: 'S',
       value: cacheKey,
@@ -92,7 +92,7 @@ export const handler = async (
         const sizeInKB = Buffer.byteLength(JSON.stringify(result), 'utf8') / 1024;
         logService.info('Response size in KB:', {}, { sizeInKB });
         try {
-          await cacheRepository.saveData(process.env.TB_BIBLIOTECA_CACHE ?? 'biblioteca-cache', {
+          await cacheRepository.saveData(process.env.TB_CACHE ?? '', {
             PageId: cacheKey,
             content: JSON.stringify(result),
             Expiration: Math.floor(Date.now() / 1000) + 3600 * 12, // Expira em 12 hora
