@@ -64,7 +64,7 @@
     "@commitlint/config-conventional": "^21.0.2",
     "@gustavoadolfo/minhoteca-adapter-layer": "^0.1.23",
     "@gustavoadolfo/minhoteca-casos-de-uso-layer": "^0.3.7",
-    "@gustavoadolfo/minhoteca-core-layer": "^1.0.27",
+    "@gustavoadolfo/minhoteca-core-layer": "^1.0.28",
     "@smithy/types": "^4.14.3",
     "@types/aws-lambda": "^8.10.162",
     "@types/jest": "^30.0.0",
