@@ -18,7 +18,8 @@ export const handler = async (
   event: APIGatewayEvent,
   context: Context
 ): Promise<APIGatewayProxyResult> => {
-  logService.info('Evento recebido:', {}, { event, context });
+  const logId = randomUUID().replaceAll('-', '').substring(0, 12);
+  logService.info('Evento recebido:', { logId }, { event, context });
 
   const tabelaCache = process.env.TB_CACHE ?? '';
 
@@ -35,11 +36,11 @@ export const handler = async (
       value: cacheKey,
     });
   } catch (error: unknown) {
-    logService.error('Erro ao buscar dados no cache:', {}, error as Error);
+    logService.error('Erro ao buscar dados no cache:', { logId }, error as Error);
   }
 
   if (data?.data?.length > 0 && data?.data[0]?.content) {
-    logService.info('Retornando dados a partir do cache.', {}, { cacheKey });
+    logService.info('Retornando dados a partir do cache.', { logId }, { cacheKey });
     return {
       statusCode: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'X-Cache': 'HIT' },
@@ -68,6 +69,7 @@ export const handler = async (
       logService.info(
         'Use case encontrado para o path e método correspondentes. Executando o caso de uso.',
         {
+          logId,
           keyPath: chaveSelecionada,
           eventPath: event.path,
           httpMethod: event.httpMethod,
@@ -76,10 +78,11 @@ export const handler = async (
       );
       const dadosEvento = JSON.parse(JSON.stringify(event));
       try {
-        const result: PageDataType = await casoDeUso.execute(dadosEvento);
+        const result: PageDataType = await casoDeUso.execute(dadosEvento, logId);
 
         if (!result?.PageData || (Array.isArray(result.PageData) && result.PageData.length === 0)) {
           logService.info('Nenhum conteúdo para retornar, enviando resposta 204 No Content.', {
+            logId,
             keyPath: chaveSelecionada,
             eventPath: event.path,
             httpMethod: event.httpMethod,
@@ -92,7 +95,7 @@ export const handler = async (
         }
 
         const sizeInKB = Buffer.byteLength(JSON.stringify(result), 'utf8') / 1024;
-        logService.info('Response size in KB:', {}, { sizeInKB });
+        logService.info('Response size in KB:', { logId }, { sizeInKB });
         try {
           await cacheRepository.saveData(tabelaCache, {
             PageId: cacheKey,
@@ -100,12 +103,13 @@ export const handler = async (
             Expiration: Math.floor(Date.now() / 1000) + 3600 * 12, // Expira em 12 hora
           });
         } catch (error) {
-          logService.error('Error saving data to cache:', {}, error as Error);
+          logService.error('Error saving data to cache:', { logId }, error as Error);
         }
 
         logService.info(
           'Retornando resposta bem-sucedida com dados.',
           {
+            logId,
             keyPath: chaveSelecionada,
             sizeInKB,
             eventPath: event.path,
@@ -120,10 +124,14 @@ export const handler = async (
           body: JSON.stringify(result),
         } as APIGatewayProxyResult;
       } catch (error: unknown) {
-        const logId = randomUUID().replaceAll('-', '').substring(0, 12);
         logService.error(
           'Erro na execução do caso de uso',
-          { keyPath: chaveSelecionada, eventPath: event.path, httpMethod: event.httpMethod, logId },
+          {
+            logId,
+            keyPath: chaveSelecionada,
+            eventPath: event.path,
+            httpMethod: event.httpMethod,
+          },
           error as Error
         );
         return {
@@ -136,7 +144,6 @@ export const handler = async (
       }
     }
 
-    const logId = randomUUID().replaceAll('-', '').substring(0, 12);
     logService.warn(
       'Use case não encontrado para o path e método correspondentes, retornando resposta de erro.',
       {
@@ -154,11 +161,10 @@ export const handler = async (
     } as APIGatewayProxyResult;
   }
 
-  const logId = randomUUID().replaceAll('-', '').substring(0, 12);
   logService.info('Registrador de requisição não encontrado, retornando resposta de erro.', {
+    logId,
     eventPath: event.path,
     httpMethod: event.httpMethod,
-    logId,
   });
 
   return {
