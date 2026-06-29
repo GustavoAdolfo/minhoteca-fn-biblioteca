@@ -60,7 +60,7 @@
     "@aws-sdk/node-http-handler": "^3.374.0",
     "@aws-sdk/s3-request-presigner": "^3.1063.0",
     "@aws-sdk/util-dynamodb": "^3.996.5",
-    "@commitlint/cli": "^21.0.2",
+    "@commitlint/cli": "^21.1.0",
     "@commitlint/config-conventional": "^21.0.2",
     "@gustavoadolfo/minhoteca-adapter-layer": "^0.1.23",
     "@gustavoadolfo/minhoteca-casos-de-uso-layer": "^0.3.7",
