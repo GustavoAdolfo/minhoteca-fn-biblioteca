@@ -1,6 +1,6 @@
 {
   "name": "@gustavoadolfo/minhoteca-fn-biblioteca",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "Função lambda para consulta e visualização do acervo da Minhoteca",
   "main": "dist/index.js",
   "files": [
