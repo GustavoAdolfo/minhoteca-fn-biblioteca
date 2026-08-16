@@ -51,13 +51,13 @@ export class Estatisticas implements UseCaseInterface {
 
   async obterTotalLivros(): Promise<number> {
     const result: ResultType = await this.repository.getCountFromTable(this.tbLivros);
-    const totalLivros = result?.data?.[0]?.count ?? -1;
+    const totalLivros = result?.data?.count ?? -1;
     return totalLivros;
   }
 
   async obterTotalAutores(): Promise<number> {
     const result: ResultType = await this.repository.getCountFromTable(this.tbAutores);
-    const totalAutores = result?.data?.[0]?.count ?? -1;
+    const totalAutores = result?.data?.count ?? -1;
     return totalAutores;
   }
 
@@ -78,13 +78,13 @@ export class Estatisticas implements UseCaseInterface {
 
   async obterTotalLeitores(): Promise<number> {
     const result: ResultType = await this.repository.getCountFromTable(this.tbUsuarios);
-    const totalLeitores = result?.data?.[0]?.count ?? -1;
+    const totalLeitores = result?.data?.count ?? -1;
     return totalLeitores;
   }
 
   async obterTotalEmprestimos(): Promise<number> {
     const result: ResultType = await this.repository.getCountFromTable(this.tbEmprestimos);
-    const totalEmprestimos = result?.data?.[0]?.count ?? -1;
+    const totalEmprestimos = result?.data?.count ?? -1;
     return totalEmprestimos;
   }
 
