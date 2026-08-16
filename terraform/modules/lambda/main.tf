@@ -24,10 +24,13 @@ resource "aws_lambda_function" "acervoFunction" {
       VERSION             = data.external.acervoFunction_version.result.version
       DYNAMODB_REPOSITORY = tostring(var.dynamodb_repository)
       TB_CACHE            = var.cache_table_name
+      TB_CACHE_HASH_KEY      = var.cache_hash_key_attribute_name
       TB_LIVROS           = var.livros_table_name
-      TB_AUTOES           = var.autores_table_name
+      TB_AUTORES          = var.autores_table_name
       TB_PAISES           = var.paises_table_name
       TB_EDITORAS         = var.editoras_table_name
+      TB_EMPRESTIMOS      = var.tb_emprestimos
+      TB_USUARIOS         = var.tb_usuarios
       DEBUG               = var.debug
       ENVIRONMENT         = var.environment
       # Requerido quando DYNAMODB_REPOSITORY for "false".

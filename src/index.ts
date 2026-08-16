@@ -31,7 +31,7 @@ export const handler = async (
   let data: ResultType = {} as unknown as ResultType;
   try {
     data = await cacheRepository.getData(tabelaCache, {
-      name: 'PageId',
+      name: process.env.TB_CACHE_HASH_KEY ?? '',
       type: 'S',
       value: cacheKey,
     });
