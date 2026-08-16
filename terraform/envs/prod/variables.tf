@@ -24,3 +24,20 @@ variable "environment" {
   type    = string
   default = "cloud"
 }
+
+variable "tb_livros" {
+  type    = string
+  default = "livros"
+}
+variable "tb_autores" {
+  type    = string
+  default = "autores"
+}
+variable "tb_emprestimos" {
+  type    = string
+  default = "emprestimos"
+}
+variable "tb_usuarios" {
+  type    = string
+  default = "usuarios"
+}
