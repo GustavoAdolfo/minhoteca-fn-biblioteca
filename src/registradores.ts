@@ -5,6 +5,7 @@ import {
   ListarAutorUseCase,
   ObterAutorUseCase,
 } from '@gustavoadolfo/minhoteca-casos-de-uso-layer';
+import { Estatisticas } from './relatorios';
 
 const repository =
   process.env.DYNAMODB_REPOSITORY && process.env.DYNAMODB_REPOSITORY === 'true'
@@ -17,5 +18,6 @@ export const registradores = {
     { '^\/v1\/livro\/[A-Fa-f0-9\-]+$': new ObterLivroUseCase(repository) },
     { '^\/v1\/autores$': new ListarAutorUseCase(repository) },
     { '^\/v1\/autor\/[A-Fa-f0-9\-]+$': new ObterAutorUseCase(repository) },
+    { '^\/v1\/estatisticas$': new Estatisticas(repository) },
   ],
 };
