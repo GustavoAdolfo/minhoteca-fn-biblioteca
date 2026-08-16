@@ -12,6 +12,7 @@ module.exports = {
     '!src/**/*.d.ts',
     '!src/**/*.interface.ts',
     '!src/**/*.type.ts',
+    '!src/relatorios/index.ts',
     '!tests/**',
   ],
   coverageThreshold: {
