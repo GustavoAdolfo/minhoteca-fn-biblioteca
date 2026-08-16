@@ -243,6 +243,53 @@ describe('BibliotecaHandler (index.ts)', () => {
     expect(result.statusCode).toBe(204);
   });
 
+  it('deve usar o fallback do cache quando as variáveis de ambiente estiverem ausentes', async () => {
+    delete process.env.TB_CACHE;
+    delete process.env.TB_CACHE_HASH_KEY;
+    mockGetData.mockResolvedValue({ data: [] });
+    mockGetAll.mockResolvedValue({
+      data: [{ id: 'fallback', titulo: 'Livro Fallback', isbn: '123456789X' }],
+      currentPage: 1,
+      totalPages: 1,
+      totalDocuments: 1,
+      hasNextPage: false,
+      hasPrevPage: false,
+      limit: 1,
+    });
+    mockSaveData.mockResolvedValue({});
+
+    const result = await handler(createEvent('/v1/livros', 'GET'), mockContext);
+
+    expect(result.statusCode).toBe(200);
+    expect(mockSaveData).toHaveBeenCalledWith(
+      '',
+      expect.objectContaining({ PageId: expect.stringContaining('get-_v1_livros') })
+    );
+  });
+
+  it('deve usar o repositório MongoDB quando DYNAMODB_REPOSITORY for false', async () => {
+    jest.resetModules();
+    const mongoGetInstance = jest.fn(() => ({ getAll: mockGetAll }));
+
+    jest.doMock('@gustavoadolfo/minhoteca-adapter-layer', () => ({
+      __esModule: true,
+      DynamoDBRepository: jest.fn(),
+      MongoDBRepository: {
+        getInstance: mongoGetInstance,
+      },
+    }));
+
+    process.env.DYNAMODB_REPOSITORY = 'false';
+
+    const { registradores } = require('../src/registradores');
+
+    expect(mongoGetInstance).toHaveBeenCalled();
+    expect(Array.isArray(registradores.get)).toBe(true);
+    expect(registradores.get.some((route) => Object.keys(route)[0].includes('/v1/livros'))).toBe(
+      true
+    );
+  });
+
   it('deve retornar 500 se o caminho não for encontrado nos registradores', async () => {
     mockGetData.mockResolvedValue({ data: [] });
 

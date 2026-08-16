@@ -123,3 +123,20 @@ variable "account_id" {
 variable "environment" {
   type = string
 }
+
+variable "tb_livros" {
+  type    = string
+  default = "livros"
+}
+variable "tb_autores" {
+  type    = string
+  default = "autores"
+}
+variable "tb_emprestimos" {
+  type    = string
+  default = "emprestimos"
+}
+variable "tb_usuarios" {
+  type    = string
+  default = "usuarios"
+}
