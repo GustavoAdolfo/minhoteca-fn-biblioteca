@@ -39,10 +39,10 @@ describe('Estatisticas', () => {
     const repository = {
       getCountFromTable: jest
         .fn()
-        .mockResolvedValueOnce({ data: [{ count: 12 }] })
-        .mockResolvedValueOnce({ data: [{ count: 4 }] })
-        .mockResolvedValueOnce({ data: [{ count: 7 }] })
-        .mockResolvedValueOnce({ data: [{ count: 7 }] }),
+        .mockResolvedValueOnce({ data: { count: 12 } })
+        .mockResolvedValueOnce({ data: { count: 4 } })
+        .mockResolvedValueOnce({ data: { count: 7 } })
+        .mockResolvedValueOnce({ data: { count: 7 } }),
       getAll: jest
         .fn()
         .mockResolvedValueOnce({
