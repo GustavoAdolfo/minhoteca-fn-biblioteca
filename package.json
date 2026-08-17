@@ -72,7 +72,7 @@
     "@typescript-eslint/eslint-plugin": "^8.62.0",
     "@typescript-eslint/parser": "^8.60.1",
     "aws-lambda": "^1.0.6",
-    "commitlint": "^21.1.0",
+    "commitlint": "^21.2.2",
     "dotenv": "^17.4.2",
     "esbuild": "^0.28.1",
     "eslint": "^10.6.0",
