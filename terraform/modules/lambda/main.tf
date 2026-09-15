@@ -24,7 +24,7 @@ resource "aws_lambda_function" "acervoFunction" {
       VERSION             = data.external.acervoFunction_version.result.version
       DYNAMODB_REPOSITORY = tostring(var.dynamodb_repository)
       TB_CACHE            = var.cache_table_name
-      TB_CACHE_HASH_KEY      = var.cache_hash_key_attribute_name
+      TB_CACHE_HASH_KEY   = var.cache_hash_key_attribute_name
       TB_LIVROS           = var.livros_table_name
       TB_AUTORES          = var.autores_table_name
       TB_PAISES           = var.paises_table_name
@@ -60,10 +60,28 @@ data "external" "acervoFunction_version" {
 
 resource "null_resource" "acervoFunction_build" {
   triggers = {
-    src_hash = sha256(join("", [for f in sort(fileset("${path.module}/../../src", "**/*")) : filesha256("${path.module}/../../minhoteca-functions/acervoes-function/${f}")]))
+    src_hash = sha256(join("", [for f in sort(fileset("${path.module}/../../../src", "**/*")) : filesha256("${path.module}/../../../src/${f}")]))
   }
   provisioner "local-exec" {
-    command = "cd ${path.module}/../../.. && npm install && npm run build"
+    command = <<EOT
+      cd ${path.module}/../../.. && \
+      npm install && \
+      if [ "${var.environment}" = "local" ]; then \
+        npm install @gustavoadolfo/minhoteca-core-layer @gustavoadolfo/minhoteca-adapter-layer @gustavoadolfo/minhoteca-casos-de-uso-layer; \
+      fi && \
+      npm run build && \
+      if [ "${var.environment}" = "local" ]; then \
+        rm -rf .layer_deps dist/node_modules && \
+        mkdir -p .layer_deps && \
+        cp .npmrc .layer_deps/ && \
+        cd .layer_deps && \
+        echo '{"name":"layer-deps","version":"1.0.0","private":true}' > package.json && \
+        npm install --omit=dev @gustavoadolfo/minhoteca-core-layer @gustavoadolfo/minhoteca-adapter-layer @gustavoadolfo/minhoteca-casos-de-uso-layer && \
+        cd .. && \
+        cp -r .layer_deps/node_modules dist/node_modules && \
+        rm -rf .layer_deps; \
+      fi
+    EOT
   }
 }
 
