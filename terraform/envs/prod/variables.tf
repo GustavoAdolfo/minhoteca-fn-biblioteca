@@ -33,10 +33,15 @@ variable "tb_autores" {
   type    = string
   default = "autores"
 }
-variable "tb_emprestimos" {
+variable "tb_livro_emprestimos" {
   type    = string
-  default = "emprestimos"
+  default = "minhoteca-livro-emprestimos"
 }
+variable "tb_usuario_emprestimos" {
+  type    = string
+  default = "minhoteca-usuario-emprestimos"
+}
+
 variable "tb_usuarios" {
   type    = string
   default = "Usuarios"

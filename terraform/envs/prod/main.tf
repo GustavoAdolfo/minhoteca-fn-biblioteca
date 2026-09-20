@@ -50,6 +50,7 @@ module "lambda" {
   environment                   = var.environment
   tb_livros                     = var.tb_livros
   tb_autores                    = var.tb_autores
-  tb_emprestimos                = var.tb_emprestimos
+  tb_livro_emprestimos          = var.tb_livro_emprestimos
+  tb_usuario_emprestimos        = var.tb_usuario_emprestimos
   tb_usuarios                   = var.tb_usuarios
 }
