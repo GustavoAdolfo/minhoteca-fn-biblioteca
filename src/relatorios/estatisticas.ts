@@ -8,6 +8,7 @@ import {
 
 export class Estatisticas implements UseCaseInterface {
   private logService: LogService;
+  logId: string = '';
   tbLivros: string;
   tbAutores: string;
   tbLivroEmprestimos: string;
@@ -28,7 +29,8 @@ export class Estatisticas implements UseCaseInterface {
     this.tbUsuarios = process.env.TB_USUARIOS ?? 'Usuarios';
   }
 
-  async execute(): Promise<PageDataType> {
+  async execute(dadoEvento: any, logId: string): Promise<PageDataType> {
+    this.logId = logId;
     const totalLivros = await this.obterTotalLivros();
     const totalAutores = await this.obterTotalAutores();
     const totalLivrosEmprestados = await this.obterTotalLivrosEmprestados();
@@ -91,7 +93,11 @@ export class Estatisticas implements UseCaseInterface {
     const result: ResultType = await this.dynamoRepository.getCountFromTable(
       this.tbUsuarioEmprestimos
     );
-    const totalEmprestimos = result?.data?.count ?? -1;
+    this.logService.info('Total emprestimos', {
+      logId: this.logId,
+      result,
+    });
+    const totalEmprestimos = result?.data ?? -1;
     return totalEmprestimos;
   }
 
