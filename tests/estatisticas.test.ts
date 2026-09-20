@@ -69,7 +69,7 @@ describe('Estatisticas', () => {
     };
 
     const estatisticas = new Estatisticas(repository as any, dynamoRepository as any);
-    const result = await estatisticas.execute();
+    const result = await estatisticas.execute({}, 'execucao-123');
 
     expect(repository.getCountFromTable).toHaveBeenCalledWith('TabelaLivros');
     expect(repository.getCountFromTable).toHaveBeenCalledWith('TabelaAutores');
@@ -85,12 +85,12 @@ describe('Estatisticas', () => {
       totalAutores: 4,
       totalLivrosEmprestados: 3,
       totalLeitores: 7,
-      totalEmprestimos: 7,
+      totalEmprestimos: { count: 7 },
       perdasLivros: 2,
     });
   });
 
-  it('deve retornar -1 quando os contadores não vierem preenchidos', async () => {
+  it('deve usar -1 para contagens sem count e preservar data vazio nos empréstimos', async () => {
     const repository = {
       getCountFromTable: jest.fn().mockResolvedValue({ data: [] }),
       getAll: jest.fn().mockResolvedValue({ data: [] }),
@@ -105,8 +105,23 @@ describe('Estatisticas', () => {
     await expect(estatisticas.obterTotalLivros()).resolves.toBe(-1);
     await expect(estatisticas.obterTotalAutores()).resolves.toBe(-1);
     await expect(estatisticas.obterTotalLeitores()).resolves.toBe(-1);
-    await expect(estatisticas.obterTotalEmprestimos()).resolves.toBe(-1);
+    await expect(estatisticas.obterTotalEmprestimos()).resolves.toEqual([]);
     await expect(estatisticas.obterPerdasLivros()).resolves.toBe(-1);
+  });
+
+  it('deve usar -1 quando a resposta do total de empréstimos não tiver data', async () => {
+    const repository = {
+      getCountFromTable: jest.fn(),
+      getAll: jest.fn(),
+    };
+    const dynamoRepository = {
+      getCountFromTable: jest.fn().mockResolvedValue({}),
+      getAll: jest.fn(),
+    };
+
+    const estatisticas = new Estatisticas(repository as any, dynamoRepository as any);
+
+    await expect(estatisticas.obterTotalEmprestimos()).resolves.toBe(-1);
   });
 
   it('deve contar livros distintos em empréstimo e ignorar itens sem livroId', async () => {
