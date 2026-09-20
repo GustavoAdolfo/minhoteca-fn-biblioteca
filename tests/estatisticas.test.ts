@@ -8,7 +8,8 @@ describe('Estatisticas', () => {
     process.env = { ...originalEnv };
     delete process.env.TB_LIVROS;
     delete process.env.TB_AUTORES;
-    delete process.env.TB_EMPRESTIMOS;
+    delete process.env.TB_LIVRO_EMPRESTIMOS;
+    delete process.env.TB_USUARIO_EMPRESTIMOS;
     delete process.env.TB_USUARIOS;
   });
 
@@ -21,19 +22,25 @@ describe('Estatisticas', () => {
       getCountFromTable: jest.fn(),
       getAll: jest.fn(),
     };
+    const dynamoRepository = {
+      getCountFromTable: jest.fn(),
+      getAll: jest.fn(),
+    };
 
-    const estatisticas = new Estatisticas(repository as any);
+    const estatisticas = new Estatisticas(repository as any, dynamoRepository as any);
 
     expect(estatisticas.tbLivros).toBe('Livros');
     expect(estatisticas.tbAutores).toBe('Autores');
-    expect(estatisticas.tbEmprestimos).toBe('Emprestimos');
+    expect(estatisticas.tbLivroEmprestimos).toBe('minhoteca-livro-emprestimos');
+    expect(estatisticas.tbUsuarioEmprestimos).toBe('minhoteca-usuario-emprestimos');
     expect(estatisticas.tbUsuarios).toBe('Usuarios');
   });
 
   it('deve calcular o resumo geral de estatísticas com os dados do repositório', async () => {
     process.env.TB_LIVROS = 'TabelaLivros';
     process.env.TB_AUTORES = 'TabelaAutores';
-    process.env.TB_EMPRESTIMOS = 'TabelaEmprestimos';
+    process.env.TB_LIVRO_EMPRESTIMOS = 'TabelaLivroEmprestimos';
+    process.env.TB_USUARIO_EMPRESTIMOS = 'TabelaUsuarioEmprestimos';
     process.env.TB_USUARIOS = 'TabelaUsuarios';
 
     const repository = {
@@ -43,31 +50,32 @@ describe('Estatisticas', () => {
         .mockResolvedValueOnce({ data: { count: 4 } })
         .mockResolvedValueOnce({ data: { count: 7 } })
         .mockResolvedValueOnce({ data: { count: 7 } }),
-      getAll: jest
-        .fn()
-        .mockResolvedValueOnce({
-          data: [
-            { livroId: 'livro-1' },
-            { livroId: 'livro-2' },
-            { livroId: 'livro-1' },
-            { livroId: undefined },
-            { livroId: 'livro-3' },
-          ],
-        })
-        .mockResolvedValueOnce({
-          data: [{ extravio: 'S' }, { extravio: 'N' }, { extravio: 'S' }],
-          totalDocuments: 2,
-        }),
+      getAll: jest.fn().mockResolvedValueOnce({
+        data: [{ extravio: 'S' }, { extravio: 'N' }, { extravio: 'S' }],
+        totalDocuments: 2,
+      }),
+    };
+    const dynamoRepository = {
+      getCountFromTable: jest.fn().mockResolvedValueOnce({ data: { count: 7 } }),
+      getAll: jest.fn().mockResolvedValueOnce({
+        data: [
+          { livroId: 'livro-1' },
+          { livroId: 'livro-2' },
+          { livroId: 'livro-1' },
+          { livroId: undefined },
+          { livroId: 'livro-3' },
+        ],
+      }),
     };
 
-    const estatisticas = new Estatisticas(repository as any);
+    const estatisticas = new Estatisticas(repository as any, dynamoRepository as any);
     const result = await estatisticas.execute();
 
     expect(repository.getCountFromTable).toHaveBeenCalledWith('TabelaLivros');
     expect(repository.getCountFromTable).toHaveBeenCalledWith('TabelaAutores');
-    expect(repository.getCountFromTable).toHaveBeenCalledWith('TabelaEmprestimos');
+    expect(dynamoRepository.getCountFromTable).toHaveBeenCalledWith('TabelaUsuarioEmprestimos');
     expect(repository.getCountFromTable).toHaveBeenCalledWith('TabelaUsuarios');
-    expect(repository.getAll).toHaveBeenCalledWith('TabelaEmprestimos', {});
+    expect(dynamoRepository.getAll).toHaveBeenCalledWith('TabelaLivroEmprestimos');
     expect(repository.getAll).toHaveBeenCalledWith('TabelaLivros', {
       filterKey: 'extravio',
       filterValue: 'S',
@@ -87,8 +95,12 @@ describe('Estatisticas', () => {
       getCountFromTable: jest.fn().mockResolvedValue({ data: [] }),
       getAll: jest.fn().mockResolvedValue({ data: [] }),
     };
+    const dynamoRepository = {
+      getCountFromTable: jest.fn().mockResolvedValue({ data: [] }),
+      getAll: jest.fn().mockResolvedValue({ data: [] }),
+    };
 
-    const estatisticas = new Estatisticas(repository as any);
+    const estatisticas = new Estatisticas(repository as any, dynamoRepository as any);
 
     await expect(estatisticas.obterTotalLivros()).resolves.toBe(-1);
     await expect(estatisticas.obterTotalAutores()).resolves.toBe(-1);
@@ -99,6 +111,10 @@ describe('Estatisticas', () => {
 
   it('deve contar livros distintos em empréstimo e ignorar itens sem livroId', async () => {
     const repository = {
+      getCountFromTable: jest.fn(),
+      getAll: jest.fn(),
+    };
+    const dynamoRepository = {
       getCountFromTable: jest.fn(),
       getAll: jest.fn().mockResolvedValue({
         data: [
@@ -111,7 +127,7 @@ describe('Estatisticas', () => {
       }),
     };
 
-    const estatisticas = new Estatisticas(repository as any);
+    const estatisticas = new Estatisticas(repository as any, dynamoRepository as any);
 
     await expect(estatisticas.obterTotalLivrosEmprestados()).resolves.toBe(2);
   });
