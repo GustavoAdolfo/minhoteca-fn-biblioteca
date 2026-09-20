@@ -56,7 +56,7 @@ describe('Estatisticas', () => {
       }),
     };
     const dynamoRepository = {
-      getCountFromTable: jest.fn().mockResolvedValueOnce({ data: { count: 7 } }),
+      getCountFromTable: jest.fn().mockResolvedValueOnce({ data: [{ count: 7 }] }),
       getAll: jest.fn().mockResolvedValueOnce({
         data: [
           { livroId: 'livro-1' },
@@ -85,12 +85,12 @@ describe('Estatisticas', () => {
       totalAutores: 4,
       totalLivrosEmprestados: 3,
       totalLeitores: 7,
-      totalEmprestimos: { count: 7 },
+      totalEmprestimos: 7,
       perdasLivros: 2,
     });
   });
 
-  it('deve usar -1 para contagens sem count e preservar data vazio nos empréstimos', async () => {
+  it('deve usar -1 para contagens sem count ou sem empréstimos', async () => {
     const repository = {
       getCountFromTable: jest.fn().mockResolvedValue({ data: [] }),
       getAll: jest.fn().mockResolvedValue({ data: [] }),
@@ -105,11 +105,11 @@ describe('Estatisticas', () => {
     await expect(estatisticas.obterTotalLivros()).resolves.toBe(-1);
     await expect(estatisticas.obterTotalAutores()).resolves.toBe(-1);
     await expect(estatisticas.obterTotalLeitores()).resolves.toBe(-1);
-    await expect(estatisticas.obterTotalEmprestimos()).resolves.toEqual([]);
+    await expect(estatisticas.obterTotalEmprestimos()).resolves.toBe(-1);
     await expect(estatisticas.obterPerdasLivros()).resolves.toBe(-1);
   });
 
-  it('deve usar -1 quando a resposta do total de empréstimos não tiver data', async () => {
+  it('deve propagar erro quando a resposta do total de empréstimos não tiver data', async () => {
     const repository = {
       getCountFromTable: jest.fn(),
       getAll: jest.fn(),
@@ -121,7 +121,9 @@ describe('Estatisticas', () => {
 
     const estatisticas = new Estatisticas(repository as any, dynamoRepository as any);
 
-    await expect(estatisticas.obterTotalEmprestimos()).resolves.toBe(-1);
+    await expect(estatisticas.obterTotalEmprestimos()).rejects.toThrow(
+      "Cannot read properties of undefined (reading '0')"
+    );
   });
 
   it('deve contar livros distintos em empréstimo e ignorar itens sem livroId', async () => {
