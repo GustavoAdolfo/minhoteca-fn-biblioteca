@@ -138,5 +138,5 @@ variable "tb_emprestimos" {
 }
 variable "tb_usuarios" {
   type    = string
-  default = "usuarios"
+  default = "Usuarios"
 }
