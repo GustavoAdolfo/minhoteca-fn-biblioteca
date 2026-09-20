@@ -22,7 +22,6 @@ export class Estatisticas implements UseCaseInterface {
     this.tbUsuarios = process.env.TB_USUARIOS ?? 'Usuarios';
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async execute(): Promise<PageDataType> {
     const totalLivros = await this.obterTotalLivros();
     const totalAutores = await this.obterTotalAutores();
