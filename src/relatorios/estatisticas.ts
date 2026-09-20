@@ -97,7 +97,7 @@ export class Estatisticas implements UseCaseInterface {
       logId: this.logId,
       result,
     });
-    const totalEmprestimos = result?.data ?? -1;
+    const totalEmprestimos = result?.data[0]?.count ?? -1;
     return totalEmprestimos;
   }
 
