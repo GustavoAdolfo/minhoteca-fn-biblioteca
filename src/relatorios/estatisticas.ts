@@ -10,15 +10,21 @@ export class Estatisticas implements UseCaseInterface {
   private logService: LogService;
   tbLivros: string;
   tbAutores: string;
-  tbEmprestimos: string;
+  tbLivroEmprestimos: string;
+  tbUsuarioEmprestimos: string;
   tbUsuarios: string;
 
-  constructor(private repository: RepositoryInterface) {
+  constructor(
+    private repository: RepositoryInterface,
+    private dynamoRepository: RepositoryInterface
+  ) {
     this.repository = repository;
     this.logService = new LogService('Estatisticas');
     this.tbLivros = process.env.TB_LIVROS ?? 'Livros';
     this.tbAutores = process.env.TB_AUTORES ?? 'Autores';
-    this.tbEmprestimos = process.env.TB_EMPRESTIMOS ?? 'Emprestimos';
+    this.tbLivroEmprestimos = process.env.TB_LIVRO_EMPRESTIMOS ?? 'minhoteca-livro-emprestimos';
+    this.tbUsuarioEmprestimos =
+      process.env.TB_USUARIO_EMPRESTIMOS ?? 'minhoteca-usuario-emprestimos';
     this.tbUsuarios = process.env.TB_USUARIOS ?? 'Usuarios';
   }
 
@@ -61,7 +67,7 @@ export class Estatisticas implements UseCaseInterface {
   }
 
   async obterTotalLivrosEmprestados(): Promise<number> {
-    const result: ResultType = await this.repository.getAll(this.tbEmprestimos, {});
+    const result: ResultType = await this.dynamoRepository.getAll(this.tbLivroEmprestimos);
     const emprestimos = (result?.data ?? []) as Emprestimo[];
     const totalLivrosEmprestados = emprestimos.reduce(
       (acc: Set<string>, emprestimo: Emprestimo) => {
@@ -82,7 +88,9 @@ export class Estatisticas implements UseCaseInterface {
   }
 
   async obterTotalEmprestimos(): Promise<number> {
-    const result: ResultType = await this.repository.getCountFromTable(this.tbEmprestimos);
+    const result: ResultType = await this.dynamoRepository.getCountFromTable(
+      this.tbUsuarioEmprestimos
+    );
     const totalEmprestimos = result?.data?.count ?? -1;
     return totalEmprestimos;
   }
