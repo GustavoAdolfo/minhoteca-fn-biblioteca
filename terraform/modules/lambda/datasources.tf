@@ -27,10 +27,13 @@ data "aws_iam_policy_document" "lambda_dynamodb" {
       "dynamodb:GetItem",
       "dynamodb:UpdateItem",
       "dynamodb:Query",
-      "dynamodb:GetRecords"
+      "dynamodb:GetRecords",
+      "dynamodb:Scan"
     ]
     resources = [
-      "arn:aws:dynamodb:${var.region_name}:${var.account_id}:table/${var.cache_table_name}"
+      "arn:aws:dynamodb:${var.region_name}:${var.account_id}:table/${var.cache_table_name}",
+      "arn:aws:dynamodb:${var.region_name}:${var.account_id}:table/${var.tb_livro_emprestimos}",
+      "arn:aws:dynamodb:${var.region_name}:${var.account_id}:table/${var.tb_usuario_emprestimos}"
     ]
   }
 }
