@@ -4,6 +4,7 @@ import {
   ObterLivroUseCase,
   ListarAutorUseCase,
   ObterAutorUseCase,
+  ObterEmprestimoUseCase,
 } from '@gustavoadolfo/minhoteca-casos-de-uso-layer';
 import { Estatisticas } from './relatorios';
 
@@ -22,6 +23,12 @@ export const registradores = {
       '^\/v1\/estatisticas$': new Estatisticas(
         MongoDBRepository.getInstance(),
         new DynamoDBRepository()
+      ),
+    },
+    {
+      '^\/v1\/livro\/[A-Fa-f0-9\-]+\/emprestimos$': new ObterEmprestimoUseCase(
+        new DynamoDBRepository(),
+        new MongoDBRepository()
       ),
     },
   ],
