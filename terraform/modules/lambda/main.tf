@@ -21,19 +21,20 @@ resource "aws_lambda_function" "acervoFunction" {
   }
   environment {
     variables = {
-      VERSION                = data.external.acervoFunction_version.result.version
-      DYNAMODB_REPOSITORY    = tostring(var.dynamodb_repository)
-      TB_CACHE               = var.cache_table_name
-      TB_CACHE_HASH_KEY      = var.cache_hash_key_attribute_name
-      TB_LIVROS              = var.livros_table_name
-      TB_AUTORES             = var.autores_table_name
-      TB_PAISES              = var.paises_table_name
-      TB_EDITORAS            = var.editoras_table_name
-      TB_LIVRO_EMPRESTIMOS   = var.tb_livro_emprestimos
-      TB_USUARIO_EMPRESTIMOS = var.tb_usuario_emprestimos
-      TB_USUARIOS            = var.tb_usuarios
-      DEBUG                  = var.debug
-      ENVIRONMENT            = var.environment
+      VERSION                   = data.external.acervoFunction_version.result.version
+      DYNAMODB_REPOSITORY       = tostring(var.dynamodb_repository)
+      TB_CACHE                  = var.cache_table_name
+      TB_CACHE_HASH_KEY         = var.cache_hash_key_attribute_name
+      TB_LIVROS                 = var.livros_table_name
+      TB_AUTORES                = var.autores_table_name
+      TB_PAISES                 = var.paises_table_name
+      TB_EDITORAS               = var.editoras_table_name
+      TABELA_EMPRESTIMO_USUARIO = var.tb_usuario_emprestimos
+      TABELA_EMPRESTIMO_LIVROS  = var.tb_livro_emprestimos
+      TABELA_LIVROS             = var.livros_table_name
+      TB_USUARIOS               = var.tb_usuarios
+      DEBUG                     = var.debug
+      ENVIRONMENT               = var.environment
       # Requerido quando DYNAMODB_REPOSITORY for "false".
       MONGODB_USERNAME = var.mongodb_username
       MONGODB_PASSWORD = var.mongodb_password
