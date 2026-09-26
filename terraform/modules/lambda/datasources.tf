@@ -23,6 +23,7 @@ data "aws_iam_policy_document" "lambda_dynamodb" {
   statement {
     effect = "Allow"
     actions = [
+      "dynamodb:DeleteItem",
       "dynamodb:PutItem",
       "dynamodb:GetItem",
       "dynamodb:UpdateItem",
