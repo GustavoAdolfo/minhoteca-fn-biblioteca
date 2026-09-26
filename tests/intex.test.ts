@@ -12,15 +12,16 @@ jest.mock('@gustavoadolfo/minhoteca-adapter-layer', () => ({
     saveData: mockSaveData,
     getAll: mockGetAll,
   })),
-  MongoDBRepository: {
-    getInstance: jest.fn(() => ({ getAll: mockGetAll })),
-  },
+  MongoDBRepository: Object.assign(
+    jest.fn().mockImplementation(() => ({ getAll: mockGetAll })),
+    { getInstance: jest.fn(() => ({ getAll: mockGetAll })) }
+  ),
   ResultType: {},
 }));
 
 process.env.DYNAMODB_REPOSITORY = 'true';
 process.env.TABELA_LIVROS = 'Livros';
-process.env.TB_BIBLIOTECA_CACHE = 'test-cache';
+process.env.TB_CACHE = 'test-cache';
 
 let handler: any;
 let registradores: any;
@@ -274,9 +275,7 @@ describe('BibliotecaHandler (index.ts)', () => {
     jest.doMock('@gustavoadolfo/minhoteca-adapter-layer', () => ({
       __esModule: true,
       DynamoDBRepository: jest.fn(),
-      MongoDBRepository: {
-        getInstance: mongoGetInstance,
-      },
+      MongoDBRepository: Object.assign(jest.fn(), { getInstance: mongoGetInstance }),
     }));
 
     process.env.DYNAMODB_REPOSITORY = 'false';
