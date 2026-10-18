@@ -88,11 +88,19 @@ O `src/index.ts` realiza as seguintes etapas:
 1. Recebe `APIGatewayEvent`
 2. Gera uma chave de cache a partir de `path`, método HTTP e `queryStringParameters`
 3. Tenta recuperar resposta do cache DynamoDB
-4. Se houver cache, retorna `200` com `X-Cache: HIT`
+4. Se houver cache dentro de `Expiration`, retorna `200` com `X-Cache: HIT`. Nas rotas `/v1/livros` e `/v1/livro/{id}`, respostas antigas sem `situacao` nos livros são ignoradas e renovadas pelo caso de uso.
 5. Se não houver cache, procura o registrador correto em `src/registradores.ts`
 6. Executa o `UseCase` correspondente
 7. Salva o resultado em cache e retorna `200`
 8. Trata erros de execução do caso de uso e retorna `500` com `LogId`
+
+### Atualização do contrato de situação dos livros
+
+O catálogo retorna `situacao` usando as versões atuais das camadas core e de casos de uso. As versões antigas podem retornar apenas `status`; alterar o estilo do site ou limpar o cache do navegador não corrige esse contrato.
+
+Após autenticar o GitHub Packages com `GITHUB_TOKEN` (permissão de leitura dos pacotes), execute `npm install` para atualizar o lockfile e as dependências, seguido de `npm test -- --runInBand tests/intex.test.ts` e `npm run build`. O lockfile deve ser atualizado antes de executar `npm ci` no CI.
+
+Em produção, a função usa Lambda Layers: publique as camadas atualizadas e depois reimplante a função biblioteca para associar seus novos ARNs. A renovação do cache por si só não corrige uma camada antiga que ainda não produz `situacao`.
 
 ## Dependências principais
 
