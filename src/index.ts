@@ -14,6 +14,26 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'GET,OPTIONS,POST,PUT,HEAD,PATCH,DELETE',
 };
 
+const hasBookSituacao = (response: unknown): boolean => {
+  if (!response || typeof response !== 'object' || !('PageData' in response)) {
+    return false;
+  }
+
+  const pageData = response.PageData;
+  if (!pageData || typeof pageData !== 'object') {
+    return false;
+  }
+
+  return Object.values(pageData).every(
+    (livro: unknown) =>
+      livro !== null &&
+      typeof livro === 'object' &&
+      'situacao' in livro &&
+      typeof livro.situacao === 'string' &&
+      livro.situacao.trim().length > 0
+  );
+};
+
 export const handler = async (
   event: APIGatewayEvent,
   context: Context
@@ -28,23 +48,41 @@ export const handler = async (
   cacheKey = cacheKey.replace(/\s/g, '').replace(/[^a-zA-Z0-9:]/g, '_');
   cacheKey = event.httpMethod.toLowerCase() + '-' + cacheKey;
 
-  let data: ResultType = {} as unknown as ResultType;
+  let cachedContent: string | undefined;
   try {
-    data = await cacheRepository.getData(tabelaCache, {
+    const data: ResultType = await cacheRepository.getData(tabelaCache, {
       name: process.env.TB_CACHE_HASH_KEY ?? '',
       type: 'S',
       value: cacheKey,
     });
+    const cached = data?.data?.[0];
+    if (cached?.content) {
+      const expired =
+        typeof cached.Expiration !== 'number' || cached.Expiration <= Math.floor(Date.now() / 1000);
+      const isBookResponse = /^\/v1\/(?:livros|livro\/[a-f0-9-]+)\/?$/i.test(event.path);
+      const validSchema = !isBookResponse || hasBookSituacao(JSON.parse(cached.content));
+
+      if (!expired && validSchema) {
+        cachedContent = cached.content;
+      } else {
+        logService.info('Ignorando cache expirado ou sem situação dos livros.', {
+          logId,
+          cacheKey,
+          expired,
+          validSchema,
+        });
+      }
+    }
   } catch (error: unknown) {
     logService.error('Erro ao buscar dados no cache:', { logId }, error as Error);
   }
 
-  if (data?.data?.length > 0 && data?.data[0]?.content) {
+  if (cachedContent) {
     logService.info('Retornando dados a partir do cache.', { logId }, { cacheKey });
     return {
       statusCode: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'X-Cache': 'HIT' },
-      body: data.data[0].content,
+      body: cachedContent,
     };
   }
 

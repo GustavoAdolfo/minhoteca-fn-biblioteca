@@ -66,15 +66,82 @@ describe('BibliotecaHandler (index.ts)', () => {
   });
 
   it('deve retornar dados do cache se existirem (Cache HIT)', async () => {
+    const cachedResponse = {
+      PageData: [{ id: '1', situacao: 'EMPRESTADO' }],
+    };
     mockGetData.mockResolvedValue({
-      data: [{ content: JSON.stringify({ PageData: 'cached-data' }) }],
+      data: [
+        {
+          content: JSON.stringify(cachedResponse),
+          Expiration: Math.floor(Date.now() / 1000) + 3600,
+        },
+      ],
     });
 
     const result = await handler(createEvent('/v1/livros', 'GET'), mockContext);
 
     expect(result.statusCode).toBe(200);
     expect(result.headers?.['X-Cache']).toBe('HIT');
-    expect(JSON.parse(result.body)).toEqual({ PageData: 'cached-data' });
+    expect(JSON.parse(result.body)).toEqual(cachedResponse);
+    expect(mockSaveData).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['sem situacao', { PageData: [{ id: '1', status: 'EMPRESTADO' }] }, 3600],
+    ['com situacao nula', { PageData: [{ id: '1', situacao: null }] }, 3600],
+    ['com situacao vazia', { PageData: [{ id: '1', situacao: '' }] }, 3600],
+    ['sem PageData', {}, 3600],
+    ['com PageData invalido', { PageData: 'cached-data' }, 3600],
+    ['expirado', { PageData: [{ id: '1', situacao: 'DISPONIVEL' }] }, 0],
+    ['sem expiracao', { PageData: [{ id: '1', situacao: 'DISPONIVEL' }] }, undefined],
+    ['com JSON invalido', 'invalid-json', 3600],
+  ])('deve renovar cache %s', async (_description, response, ttl) => {
+    mockGetData.mockResolvedValue({
+      data: [
+        {
+          content: typeof response === 'string' ? response : JSON.stringify(response),
+          ...(ttl !== undefined && { Expiration: Math.floor(Date.now() / 1000) + ttl }),
+        },
+      ],
+    });
+    const freshResponse = { PageData: [{ id: '1', situacao: 'EMPRESTADO' }] };
+    const useCase = registradores.get.find(
+      (route: Record<string, unknown>) => Object.keys(route)[0] === '^\/v1\/livros$'
+    )['^\/v1\/livros$'];
+    jest.spyOn(useCase, 'execute').mockResolvedValue(freshResponse);
+    mockSaveData.mockResolvedValue({});
+
+    const result = await handler(createEvent('/v1/livros', 'GET'), mockContext);
+
+    expect(result.headers?.['X-Cache']).toBeUndefined();
+    expect(JSON.parse(result.body)).toEqual(freshResponse);
+    expect(mockSaveData).toHaveBeenCalledWith(
+      'test-cache',
+      expect.objectContaining({ content: JSON.stringify(freshResponse) })
+    );
+  });
+
+  it('deve rejeitar cache legado tambem na consulta de um livro', async () => {
+    mockGetData.mockResolvedValue({
+      data: [
+        {
+          content: JSON.stringify({ PageData: [{ id: 'abc', status: 'EMPRESTADO' }] }),
+          Expiration: Math.floor(Date.now() / 1000) + 3600,
+        },
+      ],
+    });
+    const freshResponse = { PageData: [{ id: 'abc', situacao: 'EMPRESTADO' }] };
+    const route = registradores.get.find((route: Record<string, unknown>) =>
+      Object.keys(route)[0].startsWith('^/v1/livro/')
+    );
+    const useCase = route[Object.keys(route)[0]];
+    jest.spyOn(useCase, 'execute').mockResolvedValue(freshResponse);
+    mockSaveData.mockResolvedValue({});
+
+    const result = await handler(createEvent('/v1/livro/abc', 'GET'), mockContext);
+
+    expect(JSON.parse(result.body)).toEqual(freshResponse);
+    expect(result.headers?.['X-Cache']).toBeUndefined();
   });
 
   it('deve usar registrador de path exato quando disponível', async () => {
@@ -177,7 +244,7 @@ describe('BibliotecaHandler (index.ts)', () => {
   it('deve executar ListarLivroUseCase e salvar no cache se não houver cache', async () => {
     mockGetData.mockResolvedValue({ data: [] });
     mockGetAll.mockResolvedValue({
-      data: [{ id: '1', titulo: 'Livro 1', isbn: '123456789X' }],
+      data: [{ id: '1', titulo: 'Livro 1', isbn: '123456789X', situacao: 'EMPRESTADO' }],
       currentPage: 1,
       totalPages: 1,
       totalDocuments: 1,
@@ -191,7 +258,9 @@ describe('BibliotecaHandler (index.ts)', () => {
 
     expect(result.statusCode).toBe(200);
     const body = JSON.parse(result.body);
-    expect(body.PageData[0]).toEqual(expect.objectContaining({ id: '1', titulo: 'Livro 1' }));
+    expect(body.PageData[0]).toEqual(
+      expect.objectContaining({ id: '1', titulo: 'Livro 1', situacao: 'EMPRESTADO' })
+    );
     expect(mockSaveData).toHaveBeenCalledWith(
       'test-cache',
       expect.objectContaining({ PageId: expect.stringContaining('get-_v1_livros') })
